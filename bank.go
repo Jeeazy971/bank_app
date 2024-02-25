@@ -1,18 +1,46 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
+	"strconv"
 )
 
-var balance float64 = 10000 // Solde initial
+var balance, err = getBalanceFromFile() // Solde initial
+
+const accountBalanceFile = "balance.txt"
+
+func getBalanceFromFile() (float64, error) {
+	data, err := os.ReadFile(accountBalanceFile)
+
+	if err != nil {
+		return 1000, errors.New("Le fichier solde non trouvé.")
+	}
+
+	balanceText := string(data)
+	balance, err := strconv.ParseFloat(balanceText, 64)
+
+	if err != nil {
+		return 1000, errors.New("Échec du stockage de la valeur du solde")
+	}
+
+	return balance, nil
+}
 
 func writeBalanceToFile(balance float64) {
 	balanceText := fmt.Sprint(balance)
-	os.WriteFile("balance.txt", []byte(balanceText), 0644)
+	os.WriteFile(accountBalanceFile, []byte(balanceText), 0644)
 }
 
 func main() {
+
+	if err != nil {
+		fmt.Println("ERREUR")
+		fmt.Println(err)
+		fmt.Println("-------------------")
+	}
+
 	for {
 		fmt.Println("\nBienvenue dans votre Banque !")
 		fmt.Println("1. Consulter mon solde")
